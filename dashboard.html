@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Organiser Dashboard – The Winter Day</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{--night:#0B2447;--winter:#1D4F91;--ice:#CFE6F7;--bg:#F4F9FD;--card:#fff;--text:#0B2447;--muted:#3d5a80;--line:#cfe0ee;--err:#b3261e}
+@media (prefers-color-scheme:dark){:root{--bg:#081a33;--card:#0f2d57;--text:#eef6fd;--muted:#b7d2ea;--line:#27497a;--err:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo",Tahoma,Arial,sans-serif;line-height:1.6;padding-top:env(safe-area-inset-top,0px)}
+header{background:var(--night);color:#fff;padding:22px 20px}
+header .in{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:1.5rem}header small{color:var(--ice)}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.login{max-width:400px;margin:40px auto}
+label{display:block;font-weight:600;margin:12px 0 6px}
+input[type=email],input[type=password],input[type=search]{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text)}
+.btn{padding:11px 18px;border:0;border-radius:12px;background:var(--winter);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--winter);border:1.5px solid var(--winter)}
+header .btn.ghost{color:#fff;border-color:var(--ice)}
+.login .btn{width:100%;margin-top:18px}
+.err{color:var(--err);margin:10px 0 0;min-height:1.4em}
+[hidden]{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stats b{display:block;font-size:1.8rem;line-height:1.2}.stats span{color:var(--muted)}
+.bars{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 24px;margin-top:10px}
+.bar .t{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}.bar .t b{white-space:nowrap}
+.bar .track{height:10px;border-radius:6px;background:var(--ice);overflow:hidden;margin-top:4px}
+.bar .fill{height:100%;background:var(--winter)}
+.tools{display:flex;gap:10px;margin:18px 0 12px;flex-wrap:wrap}.tools input{flex:1;min-width:200px}
+select{font:inherit;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text)}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--winter)}
+tr.att td{background:rgba(29,79,145,.08)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;vertical-align:top}
+th{position:sticky;top:0;background:var(--card)}
+td.s{white-space:normal;min-width:240px}
+h2{margin:0 0 6px;font-size:1.2rem}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <div><h1>The Winter Day · Organiser Dashboard</h1><small>Elevate Events · Guest registrations and check-in</small></div>
+  <button class="btn ghost" id="out" hidden>Sign out</button>
+</div></header>
+<main>
+  <section class="card login" id="login">
+    <h2>Organiser access</h2>
+    <p style="margin:0;color:var(--muted)">Enter the access code shared by the event organisers. Guest details are private.</p>
+    <form id="lf">
+      <label for="pw">Access code</label><input id="pw" type="password" autocomplete="off" required>
+      <p class="err" id="le" role="alert"></p>
+      <button class="btn" type="submit">Open dashboard</button>
+    </form>
+  </section>
+
+  <div id="dash" hidden>
+    <div class="stats">
+      <div><b id="n-total">0</b><span>Guests registered</span></div>
+      <div><b id="n-att">0</b><span>Attended</span></div>
+      <div><b id="n-not">0</b><span>Not attended yet</span></div>
+      <div><b id="n-book">0</b><span>Workshop places booked (of 80)</span></div>
+    </div>
+    <section class="card">
+      <h2>Workshop sessions</h2>
+      <div class="bars" id="bars"></div>
+    </section>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Search by name, mobile, email or session">
+      <select id="flt" aria-label="Filter"><option value="all">All guests</option><option value="yes">Attended</option><option value="no">Not attended</option></select>
+      <button class="btn ghost" id="rf" type="button">Refresh</button>
+      <button class="btn" id="csv" type="button">Download CSV</button>
+    </div>
+    <section class="card"><div class="tbl"><table>
+      <thead><tr><th>Attended</th><th>Reg No</th><th>Full name</th><th>Mobile</th><th>Email</th><th>Workshop sessions</th><th>Registered</th></tr></thead>
+      <tbody id="rows"></tbody></table></div>
+      <p id="empty" style="color:var(--muted);margin:12px 0 0" hidden>No registrations yet.</p>
+    </section>
+  </div>
+</main>
+<script>
+const SUPABASE_URL = "https://nrcteckwttsxlagcgpdp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_momCtEf-R5M5gPY3wgQ6zA_3TPg2V6P";
+const SESSIONS = [1,2,3,4].flatMap(w => [["Session 1","10:00 AM – 10:45 AM"],["Session 2","11:15 AM – 12:00 PM"]].map(([n,t]) => `Workshop ${w} – ${n} (${t})`));
+const CAP = 10;
+const $ = id => document.getElementById(id);
+let pin = null, data = [];
+try { pin = sessionStorage.getItem("wd-pin"); } catch(e){}
+const HD = {"Content-Type":"application/json", apikey: SUPABASE_KEY};
+async function rpc(fn, body){
+  const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/" + fn, {method:"POST", headers:HD, body:JSON.stringify(body)});
+  const j = await r.json().catch(() => null);
+  if(!r.ok || !j) throw new Error("network");
+  return j;
+}
+function show(on){ $("login").hidden = on; $("dash").hidden = !on; $("out").hidden = !on; }
+function logout(msg){ pin = null; try{ sessionStorage.removeItem("wd-pin"); }catch(e){} data = []; show(false); $("le").textContent = msg || ""; }
+function errText(c){ return c === "locked" ? "Too many wrong attempts. Please wait a few minutes." : c === "wrong" ? "Incorrect access code." : "Could not load data. Please try again."; }
+
+function render(){
+  const q = $("q").value.trim().toLowerCase(), f = $("flt").value;
+  const rows = data.filter(r => (f === "all" || (f === "yes") === !!r.attended) &&
+    (!q || [r.reg_no,r.full_name,r.mobile,r.email,(r.sessions||[]).join(" ")].join(" ").toLowerCase().includes(q)));
+  const tb = $("rows"); tb.textContent = "";
+  rows.forEach(r => {
+    const tr = document.createElement("tr"); if(r.attended) tr.className = "att";
+    const c0 = document.createElement("td"), cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = !!r.attended; cb.setAttribute("aria-label","Attended: " + r.full_name);
+    cb.onchange = () => mark(r, cb);
+    c0.appendChild(cb); tr.appendChild(c0);
+    const when = new Date(r.created_at).toLocaleString("en-GB", {dateStyle:"medium", timeStyle:"short"});
+    [r.reg_no, r.full_name, r.mobile, r.email, (r.sessions||[]).join("; ") || "–", when].forEach((t,i) => { const td = document.createElement("td"); if(i===4) td.className="s"; td.textContent = t; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+  $("empty").hidden = rows.length > 0;
+  const counts = Object.fromEntries(SESSIONS.map(s => [s,0]));
+  data.forEach(r => (r.sessions||[]).forEach(s => { counts[s] = (counts[s]||0) + 1; }));
+  const att = data.filter(r => r.attended).length;
+  $("n-total").textContent = data.length; $("n-att").textContent = att; $("n-not").textContent = data.length - att;
+  $("n-book").textContent = SESSIONS.reduce((a,s) => a + (counts[s]||0), 0);
+  const bars = $("bars"); bars.textContent = "";
+  SESSIONS.forEach(s => {
+    const c = counts[s]||0, d = document.createElement("div"); d.className = "bar";
+    const t = document.createElement("div"); t.className = "t";
+    const a = document.createElement("span"); a.textContent = s.replace(" – ", " · ");
+    const b = document.createElement("b"); b.textContent = c + " / " + CAP;
+    t.append(a,b);
+    const tr = document.createElement("div"); tr.className = "track";
+    const fl = document.createElement("div"); fl.className = "fill"; fl.style.width = Math.min(100, c/CAP*100) + "%";
+    tr.appendChild(fl); d.append(t,tr); bars.appendChild(d);
+  });
+}
+async function mark(r, cb){
+  const want = cb.checked; cb.disabled = true;
+  try {
+    const j = await rpc("set_attendance", {p_pin: pin, p_id: r.id, p_attended: want});
+    if(!j.ok) throw new Error(j.error);
+    r.attended = want; r.attended_at = want ? new Date().toISOString() : null;
+  } catch(e){ cb.checked = !want; alert("Could not save. Please check your connection and try again."); }
+  render();
+}
+async function refresh(first){
+  try {
+    const j = await rpc("admin_list", {p_pin: pin});
+    if(!j.ok) return logout(errText(j.error));
+    data = j.rows || []; render(); show(true);
+  } catch(e){ if(first) logout(errText("network")); }
+}
+$("lf").addEventListener("submit", async e => {
+  e.preventDefault(); $("le").textContent = "";
+  const btn = e.submitter; btn.disabled = true;
+  pin = $("pw").value; try{ sessionStorage.setItem("wd-pin", pin); }catch(_){}
+  $("pw").value = ""; await refresh(true);
+  btn.disabled = false;
+});
+$("out").onclick = () => logout();
+$("rf").onclick = () => refresh(false);
+$("q").oninput = render; $("flt").onchange = render;
+$("csv").onclick = () => {
+  const safe = v => { let s = String(v ?? ""); if(/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g,'""') + '"'; };
+  const lines = [["Reg No","Full name","Mobile","Email","Workshop sessions","Registered at","Attended"].map(safe).join(",")]
+    .concat(data.map(r => [r.reg_no,r.full_name,r.mobile,r.email,(r.sessions||[]).join("; "),r.created_at,r.attended ? "Yes" : "No"].map(safe).join(",")));
+  const blob = new Blob(["\ufeff" + lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "winter-day-registrations.csv"; a.click(); URL.revokeObjectURL(a.href);
+};
+if(pin) refresh(true);
+setInterval(() => { if(pin && !$("dash").hidden) refresh(false); }, 30000);
+</script>
+</body>
+</html>
