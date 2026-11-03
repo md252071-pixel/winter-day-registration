@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guest Registration – The Winter Day</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{
+  --night:#0B2447; --winter:#1D4F91; --ice:#CFE6F7; --snow:#FFFFFF;
+  --bg:#F4F9FD; --card:#FFFFFF; --text:#0B2447; --muted:#3d5a80; --line:#cfe0ee; --err:#b3261e;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#081a33;--card:#0f2d57;--text:#eef6fd;--muted:#b7d2ea;--line:#27497a;--err:#ff8a80}
+}
+:root[data-theme="dark"]{--bg:#081a33;--card:#0f2d57;--text:#eef6fd;--muted:#b7d2ea;--line:#27497a;--err:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo",Tahoma,Arial,sans-serif;line-height:1.7}
+.hero{background:var(--night);color:var(--snow);padding:40px 20px 90px;position:relative;overflow:hidden}
+.hero .in{max-width:720px;margin:auto;position:relative;z-index:1}
+.hero small{color:var(--ice);font-size:1rem}
+.hero h1{margin:4px 0 6px;font-size:clamp(2.6rem,9vw,4.4rem);font-weight:800;line-height:1.1;letter-spacing:-.5px}
+.hero p{margin:0;color:var(--ice);font-size:1.15rem}
+.flake{position:absolute;right:-30px;top:-10px;width:230px;opacity:.9}
+.flake.s{right:auto;left:-20px;top:auto;bottom:-30px;width:110px;opacity:.35}
+main{max-width:720px;margin:-60px auto 40px;padding:0 16px;position:relative;z-index:2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px}
+.card h2{margin:0 0 4px;font-size:1.5rem}
+.card .sub{margin:0 0 18px;color:var(--muted)}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input{width:100%;font:inherit;font-size:1.05rem;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text)}
+input:focus-visible,button:focus-visible{outline:3px solid var(--winter);outline-offset:2px}
+input[aria-invalid="true"]{border-color:var(--err)}
+.err{color:var(--err);font-size:.9rem;margin:4px 0 0}.err:empty{display:none}
+#cfg:not([hidden]){display:block;padding:10px 12px;border:1px solid var(--err);border-radius:10px}
+.btn{width:100%;margin-top:20px;padding:15px;border:0;border-radius:14px;background:var(--winter);color:#fff;font:inherit;font-weight:800;font-size:1.1rem;cursor:pointer}
+.btn:hover{background:#17407a}
+.btn.ghost{background:transparent;color:var(--winter);border:1.5px solid var(--winter);margin-top:12px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.ghost{color:var(--ice);border-color:var(--ice)}}
+.done{text-align:center}
+.done .tick{width:72px;height:72px;border-radius:50%;background:var(--ice);color:var(--night);display:grid;place-items:center;margin:0 auto 10px;font-size:2.2rem;font-weight:800}
+.done .no{display:inline-block;background:var(--night);color:var(--snow);padding:6px 18px;border-radius:30px;font-weight:800;margin:8px 0}
+[hidden]{display:none!important}
+.info{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:22px}
+.info div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.info b{display:block;font-size:1.1rem}
+.info span{color:var(--muted)}
+.about{margin-top:26px}
+.about h2{font-size:1.3rem;margin:0 0 4px}
+.about>p{margin:0 0 12px;color:var(--muted)}
+.booths{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.booths div{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--winter);border-radius:12px;padding:10px 12px;font-size:.95rem}
+.booths.one{grid-template-columns:1fr}
+.booths b{display:block;line-height:1.35;margin-bottom:2px}
+.booths span{color:var(--muted);font-size:.85rem;line-height:1.4;display:block}
+.booths .hl{background:var(--night);border-color:var(--night);border-inline-start-color:var(--ice);color:var(--snow)}
+.booths .hl span{color:var(--ice)}
+.sched{margin-top:26px}
+.sched h2{font-size:1.3rem;margin:0 0 10px}
+.sched ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.sched li{display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.sched li:last-child{border-bottom:0;background:var(--night);color:var(--snow)}
+.sched li span{font-weight:600;white-space:nowrap}
+.opt{margin:18px 0 0;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;min-width:0}
+.opt summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.opt summary::-webkit-details-marker{display:none}
+.opt summary::after{content:"+";font-size:1.4rem;color:var(--winter);line-height:1}
+.opt[open] summary::after{content:"\2212"}
+.opt summary small{font-weight:400;color:var(--muted)}
+.hint{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+.opt .list{padding-bottom:6px}
+.opt label{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;margin:0 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-weight:600;cursor:pointer}
+.opt label input{grid-row:span 2}
+.opt label span{grid-column:2;color:var(--muted);font-size:.88rem;font-weight:400}
+.opt label.full{opacity:.55;cursor:not-allowed}
+input[type=checkbox]{width:20px;height:20px;padding:0;accent-color:var(--winter)}
+.qrbox{display:flex;align-items:center;gap:18px;margin-top:16px;flex-wrap:wrap}
+.qrbox img{width:130px;height:130px;border-radius:12px;background:#fff;padding:6px;border:1px solid var(--line)}
+.qrbox p{margin:0 0 10px;color:var(--muted)}
+.qrbox a{display:inline-block;background:var(--winter);color:#fff;text-decoration:none;font-weight:800;padding:12px 18px;border-radius:12px}
+footer{text-align:center;color:var(--muted);padding:10px 16px 30px;font-size:.9rem}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sf" viewBox="-100 -100 200 200">
+    <g stroke="currentColor" stroke-width="7" stroke-linecap="round" fill="none">
+      <g id="arm"><path d="M0 -88V88"/><path d="M-20 -66L0 -42L20 -66"/><path d="M-20 66L0 42L20 66"/></g>
+      <use href="#arm" transform="rotate(60)"/><use href="#arm" transform="rotate(120)"/>
+      <circle r="14"/>
+    </g>
+  </symbol>
+</svg>
+
+<header class="hero">
+  <svg class="flake" style="color:#CFE6F7" aria-hidden="true"><use href="#sf"/></svg>
+  <svg class="flake s" style="color:#1D4F91" aria-hidden="true"><use href="#sf"/></svg>
+  <div class="in">
+    <small>Elevate Events presents</small>
+    <h1>The Winter Day</h1>
+    <p>A winter-themed open day · 17 December</p>
+  </div>
+</header>
+
+<main>
+  <section class="card" id="formCard">
+    <h2>Register your visit</h2>
+    <p class="sub">Fill in your details and we will welcome you on the day.</p>
+    <p class="err" id="cfg" hidden>Setup needed: add your Supabase URL and key in the CONFIG block at the top of the script.</p>
+    <form id="f" novalidate>
+      <label for="name">Full name</label>
+      <input id="name" autocomplete="name" placeholder="e.g. Sara Ahmed">
+      <p class="err" id="e-name" role="alert"></p>
+
+      <label for="mobile">Mobile number</label>
+      <input id="mobile" inputmode="tel" autocomplete="tel" placeholder="05XXXXXXXX" maxlength="14">
+      <p class="err" id="e-mobile" role="alert"></p>
+
+      <label for="email">Email address</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com">
+      <p class="err" id="e-email" role="alert"></p>
+
+      <details class="opt">
+        <summary><span>Choose workshop sessions <small>(optional)</small></span></summary>
+        <div class="list">
+        <p class="hint">Each workshop runs twice. Every session has 10 places.</p>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="10:00 AM – 10:45 AM" value="Workshop 1 – Session 1 (10:00 AM – 10:45 AM)">Workshop 1 · Session 1<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="11:15 AM – 12:00 PM" value="Workshop 1 – Session 2 (11:15 AM – 12:00 PM)">Workshop 1 · Session 2<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="10:00 AM – 10:45 AM" value="Workshop 2 – Session 1 (10:00 AM – 10:45 AM)">Workshop 2 · Session 1<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="11:15 AM – 12:00 PM" value="Workshop 2 – Session 2 (11:15 AM – 12:00 PM)">Workshop 2 · Session 2<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="10:00 AM – 10:45 AM" value="Workshop 3 – Session 1 (10:00 AM – 10:45 AM)">Workshop 3 · Session 1<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="11:15 AM – 12:00 PM" value="Workshop 3 – Session 2 (11:15 AM – 12:00 PM)">Workshop 3 · Session 2<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="10:00 AM – 10:45 AM" value="Workshop 4 – Session 1 (10:00 AM – 10:45 AM)">Workshop 4 · Session 1<span></span></label>
+        <label><input type="checkbox" name="s" data-cap="10" data-t="11:15 AM – 12:00 PM" value="Workshop 4 – Session 2 (11:15 AM – 12:00 PM)">Workshop 4 · Session 2<span></span></label>
+      </div>
+      </details>
+
+      <button class="btn" type="submit">Register now</button>
+    </form>
+  </section>
+
+  <section class="card done" id="doneCard" hidden>
+    <div class="tick" aria-hidden="true">✓</div>
+    <h2>You are registered</h2>
+    <p class="sub" id="doneMsg"></p>
+    <div class="no" id="regNo"></div>
+    <p class="sub">Show this number at the event entrance.</p>
+    <button class="btn ghost" id="again" type="button">Register another guest</button>
+  </section>
+
+  <div class="info">
+    <div><b>17 December</b><span>Event date</span></div>
+    <div><b>1,300+ students</b><span>Expected attendance</span></div>
+    <div><b>4 workshops</b><span>2 sessions each, 10 places per session</span></div>
+    <div><b>9 vendors</b><span>Confirmed so far, more to come</span></div>
+  </div>
+
+  <section class="sched" aria-labelledby="sc">
+    <h2 id="sc">Workshop schedule</h2>
+    <ul>
+      <li>Session 1<span>10:00 AM – 10:45 AM</span></li>
+      <li>Session 2<span>11:15 AM – 12:00 PM</span></li>
+      <li>4 workshops run in each session<span>10 places each</span></li>
+    </ul>
+  </section>
+
+  <section class="about" aria-labelledby="ab">
+    <h2 id="ab">What you will find at the event</h2>
+    <p>Four workshops, plus booths from 9 confirmed vendors, with more joining. Locations will be announced by the organisers.</p>
+    <div class="booths">
+      <div><b>Accessories &amp; clothing</b><span>Winter fashion and accessories booths</span></div>
+      <div><b>Productive families</b><span>Products from local productive families</span></div>
+      <div><b>Caf&eacute;s</b><span>Warm drinks and treats</span></div>
+      <div><b>Sports &amp; entertainment experiences</b><span>Active, fun experiences to try</span></div>
+      <div><b>Games &amp; entertainment</b><span>Energetic games that add fun to the day</span></div>
+      <div class="hl"><b>Interactive workshops</b><span>Hands-on spaces to take part and interact</span></div>
+    </div>
+    <p style="margin:14px 0 0">Organised by <b>Elevate Events</b>, an event management company focused on professional organisation, creativity, execution quality and attention to detail.</p>
+  </section>
+
+  <section class="about" aria-labelledby="tb">
+    <h2 id="tb">Still to be confirmed</h2>
+    <div class="booths one">
+      <div><b>Movie screening or yoga session</b><span>The event team is choosing between the two. The final choice will be announced soon.</span></div>
+      <div><b>Event map</b><span>A map is being prepared showing workshop locations, booth locations, the movie or yoga area and other event areas.</span></div>
+    </div>
+  </section>
+
+</main>
+<footer>Elevate Events · The Winter Day</footer>
+
+<script>
+// ===== CONFIG: paste your own values from Supabase > Project Settings > API =====
+const SUPABASE_URL = "https://nrcteckwttsxlagcgpdp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_momCtEf-R5M5gPY3wgQ6zA_3TPg2V6P";
+// =================================================================================
+
+const $ = id => document.getElementById(id);
+const configured = SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.startsWith("YOUR-");
+if(!configured) $("cfg").hidden = false;
+
+async function rpc(fn, body){
+  const headers = {"Content-Type":"application/json", apikey: SUPABASE_KEY};
+  if(SUPABASE_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SUPABASE_KEY;
+  const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/" + fn, {method:"POST", headers, body: JSON.stringify(body || {})});
+  const j = await r.json().catch(() => null);
+  if(!r.ok) throw new Error((j && j.message) || "request_failed");
+  return j;
+}
+
+const digits = s => s.replace(/[\u0660-\u0669]/g, d => String(d.charCodeAt(0) - 0x660)).replace(/[\s\-]/g,"");
+function setErr(k, msg){ $("e-"+k).textContent = msg; $(k).setAttribute("aria-invalid", msg ? "true" : "false"); return !msg; }
+
+function validate(){
+  const name = $("name").value.trim();
+  const mob = digits($("mobile").value).replace(/^(\+966|00966)/,"0");
+  const mail = $("email").value.trim();
+  let ok = true;
+  ok = setErr("name", name.length < 3 ? "Enter your full name (at least 3 characters)." : "") && ok;
+  ok = setErr("mobile", /^05\d{8}$/.test(mob) ? "" : "Enter a valid Saudi mobile number, for example 0501234567.") && ok;
+  ok = setErr("email", /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail) ? "" : "Enter a valid email address, for example name@example.com.") && ok;
+  return ok ? {name, mobile: mob, email: mail} : null;
+}
+
+let counts = {};
+function seats(){
+  document.querySelectorAll('input[name=s]').forEach(i => {
+    const left = Math.max(+i.dataset.cap - (counts[i.value] || 0), 0), full = left === 0;
+    i.disabled = full; if(full) i.checked = false;
+    i.parentElement.classList.toggle('full', full);
+    i.nextElementSibling.textContent = full ? 'Full' : (i.dataset.t ? i.dataset.t + ' · ' : '') + left + ' places left';
+  });
+}
+async function loadCounts(){
+  if(!configured) return seats();
+  try { const rows = await rpc("session_counts"); counts = {}; rows.forEach(r => counts[r.session] = r.booked); } catch(e){}
+  seats();
+}
+loadCounts();
+
+function friendly(msg){
+  if(msg.startsWith("duplicate_mobile")) return ["mobile", "This mobile number is already registered."];
+  if(msg.startsWith("session_full")) return ["form", "Sorry, " + msg.split(":").slice(1).join(":") + " has just filled up. Please choose another session."];
+  return ["form", "Something went wrong. Please try again in a moment."];
+}
+
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!configured){ $("cfg").hidden = false; return; }
+  const v = validate(); if(!v) return;
+  const sessions = [...document.querySelectorAll('input[name=s]:checked')].map(x => x.value);
+  const btn = e.submitter || document.querySelector("#f button[type=submit]");
+  btn.disabled = true; const label = btn.textContent; btn.textContent = "Registering…";
+  try {
+    const no = await rpc("register_guest", {p_name: v.name, p_mobile: v.mobile, p_email: v.email, p_sessions: sessions});
+    $("doneMsg").textContent = "Welcome, " + v.name.split(" ")[0] + ". See you at The Winter Day.";
+    $("regNo").textContent = no;
+    $("formCard").hidden = true; $("doneCard").hidden = false;
+    $("doneCard").scrollIntoView({behavior:"smooth", block:"center"});
+  } catch(err){
+    const [where, text] = friendly(err.message);
+    if(where === "form") setErr("email", text); else setErr(where, text);
+    loadCounts();
+  }
+  btn.disabled = false; btn.textContent = label;
+});
+
+$("again").onclick = () => { $("f").reset(); ["name","mobile","email"].forEach(k=>setErr(k,"")); $("doneCard").hidden = true; $("formCard").hidden = false; loadCounts(); $("name").focus(); };
+</script>
+</body>
+</html>
