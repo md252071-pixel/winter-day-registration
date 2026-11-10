@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Feedback – The Winter Day</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{--night:#0B2447;--winter:#1D4F91;--ice:#CFE6F7;--bg:#F4F9FD;--card:#fff;--text:#0B2447;--muted:#3d5a80;--line:#cfe0ee;--err:#b3261e;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#081a33;--card:#0f2d57;--text:#eef6fd;--muted:#b7d2ea;--line:#27497a;--err:#ff8a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo",Tahoma,Arial,sans-serif;line-height:1.6}
+.hero{background:var(--night);color:#fff;padding:32px 20px 80px}.hero .in{max-width:640px;margin:auto}
+.hero small{color:var(--ice)}.hero h1{margin:2px 0;font-size:2.2rem;font-weight:800;line-height:1.15}.hero p{margin:0;color:var(--ice)}
+main{max-width:640px;margin:-50px auto 40px;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px 20px}
+h2{margin:0 0 4px;font-size:1.4rem}.sub{margin:0 0 8px;color:var(--muted)}
+fieldset{border:0;padding:0;margin:20px 0 0;min-width:0}legend{font-weight:600;margin-bottom:8px;padding:0}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.scale label,.yn label{position:relative}
+.scale input,.yn input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.scale span,.yn span{display:block;text-align:center;padding:12px 6px;border:1.5px solid var(--line);border-radius:12px;font-weight:800;background:var(--bg)}
+.yn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+input:checked+span{background:var(--winter);border-color:var(--winter);color:#fff}
+input:focus-visible+span{outline:3px solid var(--winter);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;margin-top:4px}
+textarea{width:100%;min-height:110px;font:inherit;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--text);resize:vertical}
+.btn{width:100%;margin-top:22px;padding:15px;border:0;border-radius:14px;background:var(--winter);color:#fff;font:inherit;font-weight:800;font-size:1.1rem;cursor:pointer}
+.err{color:var(--err);min-height:1.4em;margin:10px 0 0}.err:empty{display:none}
+.done{text-align:center}.tick{width:72px;height:72px;border-radius:50%;background:var(--ice);color:var(--night);display:grid;place-items:center;margin:0 auto 10px;font-size:2.2rem;font-weight:800}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in"><small>Elevate Events</small><h1>Your feedback</h1><p>The Winter Day · Guest Registration System</p></div></header>
+<main>
+<section class="card" id="fc">
+  <h2>Tell us what you think</h2><p class="sub">It takes less than a minute and is anonymous.</p>
+  <form id="f" novalidate>
+    <fieldset><legend>1. How easy was it to register?</legend>
+      <div class="scale" id="q1"></div><div class="ends"><span>Very hard</span><span>Very easy</span></div></fieldset>
+    <fieldset><legend>2. How clear was the instruction session?</legend>
+      <div class="scale" id="q2"></div><div class="ends"><span>Not clear</span><span>Very clear</span></div></fieldset>
+    <fieldset><legend>3. Did the app meet your needs?</legend>
+      <div class="yn"><label><input type="radio" name="met" value="Yes"><span>Yes</span></label><label><input type="radio" name="met" value="Partly"><span>Partly</span></label><label><input type="radio" name="met" value="No"><span>No</span></label></div></fieldset>
+    <fieldset><legend>4. What should we improve? <small style="font-weight:400;color:var(--muted)">(optional)</small></legend>
+      <textarea id="imp" maxlength="1000" placeholder="Your suggestions"></textarea></fieldset>
+    <p class="err" id="er" role="alert"></p>
+    <button class="btn" type="submit">Send feedback</button>
+  </form>
+</section>
+<section class="card done" id="dn" hidden><div class="tick" aria-hidden="true">✓</div><h2>Thank you</h2><p class="sub">Your feedback helps us improve the app.</p></section>
+</main>
+<script>
+const SUPABASE_URL = "https://nrcteckwttsxlagcgpdp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_momCtEf-R5M5gPY3wgQ6zA_3TPg2V6P";
+const $ = id => document.getElementById(id);
+["q1","q2"].forEach(q => { for(let i=1;i<=5;i++){ $(q).insertAdjacentHTML("beforeend", `<label><input type="radio" name="${q}" value="${i}"><span>${i}</span></label>`); } });
+const val = n => { const e = document.querySelector(`input[name=${n}]:checked`); return e ? e.value : null; };
+$("f").addEventListener("submit", async e => {
+  e.preventDefault(); $("er").textContent = "";
+  const a = val("q1"), b = val("q2"), m = val("met");
+  if(!a || !b || !m){ $("er").textContent = "Please answer questions 1, 2 and 3."; return; }
+  const btn = e.submitter; btn.disabled = true; const t = btn.textContent; btn.textContent = "Sending…";
+  try {
+    const r = await fetch(SUPABASE_URL + "/rest/v1/rpc/submit_feedback", {method:"POST", headers:{"Content-Type":"application/json", apikey:SUPABASE_KEY},
+      body: JSON.stringify({p_ease:+a, p_clarity:+b, p_met:m, p_improve:$("imp").value})});
+    if(!r.ok) throw new Error();
+    $("fc").hidden = true; $("dn").hidden = false; window.scrollTo(0,0);
+  } catch(err){ $("er").textContent = "Something went wrong. Please try again."; }
+  btn.disabled = false; btn.textContent = t;
+});
+</script>
+</body>
+</html>
