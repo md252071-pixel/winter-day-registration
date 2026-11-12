@@ -82,6 +82,11 @@ h2{margin:0 0 6px;font-size:1.2rem}
       <tbody id="rows"></tbody></table></div>
       <p id="empty" style="color:var(--muted);margin:12px 0 0" hidden>No registrations yet.</p>
     </section>
+    <section class="card" id="fbc" style="margin-top:16px" hidden>
+      <h2>Client feedback</h2>
+      <div class="stats" style="margin:12px 0" id="fbs"></div>
+      <div id="fbl"></div>
+    </section>
   </div>
 </main>
 <script>
@@ -145,11 +150,25 @@ async function mark(r, cb){
   } catch(e){ cb.checked = !want; alert("Could not save. Please check your connection and try again."); }
   render();
 }
+async function loadFb(){
+  try {
+    const j = await rpc("admin_feedback", {p_pin: pin});
+    if(!j.ok) return;
+    const rows = j.rows || [], avg = k => rows.length ? (rows.reduce((a,r) => a + r[k], 0) / rows.length).toFixed(1) : "–";
+    const yes = rows.filter(r => r.met_needs === "Yes").length;
+    $("fbc").hidden = false;
+    const box = (b,t) => { const d = document.createElement("div"); const x = document.createElement("b"); x.textContent = b; const y = document.createElement("span"); y.textContent = t; d.append(x,y); return d; };
+    const st = $("fbs"); st.textContent = "";
+    st.append(box(rows.length,"Responses"), box(avg("ease")+" / 5","Ease of use"), box(avg("clarity")+" / 5","Session clarity"), box(yes+" / "+rows.length,"Said the app met their needs"));
+    const l = $("fbl"); l.textContent = "";
+    rows.filter(r => r.improve).forEach(r => { const p = document.createElement("p"); p.style.cssText = "margin:6px 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px"; p.textContent = r.improve; l.appendChild(p); });
+  } catch(e){}
+}
 async function refresh(first){
   try {
     const j = await rpc("admin_list", {p_pin: pin});
     if(!j.ok) return logout(errText(j.error));
-    data = j.rows || []; render(); show(true);
+    data = j.rows || []; render(); show(true); loadFb();
   } catch(e){ if(first) logout(errText("network")); }
 }
 $("lf").addEventListener("submit", async e => {
